@@ -69,8 +69,9 @@ const Home = () => {
         <ul>
           <Items isValued={true} value="it is a correct list" />
           <Items isValued={false} value="this is not a condition" />
+          
           <Items isValued={true} value="my name is sardar m nadir" />
-        </ul>
+        </ul>       
       </section>
 
       <article>
