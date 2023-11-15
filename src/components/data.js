@@ -1,4 +1,4 @@
-export const people = [
+const people = [
   {
     id: 0,
     name: "Creola Katherine Johnson",
@@ -36,3 +36,5 @@ export const people = [
     imageId: "lrWQx8l",
   },
 ];
+
+export default people;

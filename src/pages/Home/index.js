@@ -80,6 +80,10 @@ const Home = () => {
         <Cup guest={2} />
         <Cup guest={3} />
       </article>
+
+      <div>
+        <h1>passing props to the component</h1>
+      </div>
     </div>
   );
 };
