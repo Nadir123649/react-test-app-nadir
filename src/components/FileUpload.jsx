@@ -81,19 +81,20 @@ const FileUpload = () => {
         <div className="file-upload-container">
             <h1>File Upload and Tagging</h1>
             <div
-                className="drag-drop-area"
+                className="drag-drop-area d-flex justify-content-center align-items-center flex-column"
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
             >
                 <p>Drag and drop files here</p>
+                <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleFileUpload}
+                    multiple
+                    className="file-input"
+                />
             </div>
-            <input
-                type="file"
-                accept="image/*,video/*"
-                onChange={handleFileUpload}
-                multiple
-                className="file-input"
-            />
+
             <div className="file-upload-list">
                 {files.map((fileData, index) => (
                     <FileItem
