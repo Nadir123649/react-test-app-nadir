@@ -35,10 +35,8 @@ const Login = () => {
     try {
       const response = await login(data);
       if (response.status === 200) {
-        const accessTokenId = response.data.accessToken;
-        const userProfile = JSON.stringify(response.data.userProfile);
+        const accessTokenId = response.data.token;
         localStorage.setItem('accessToken', accessTokenId);
-        localStorage.setItem('userProfile', userProfile);
         navigate('/home');
       } else {
         setIsCustomError('Try again');

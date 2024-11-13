@@ -26,11 +26,24 @@ export const registeration = (data) => {
   });
 };
 
-export const logout = () => {
-  return axios.post(`${baseUrl}/Account/Logout`, null, {
+export const uploadFile = (data) => {
+  token()
+  return axios.post(`${baseUrl}/files/upload`, data, {
     headers: {
-      "Content-Type": "application/json",
       Authorization: authorization,
-    },
+    }
   });
+};
+
+export const getFiles = () => {
+  token()
+  return axios.get(`${baseUrl}/files/list/details`,{
+    headers: {
+      Authorization: authorization,
+    }
+  });
+};
+
+export const logout = () => {
+  localStorage.removeItem('accessToken')
 };
