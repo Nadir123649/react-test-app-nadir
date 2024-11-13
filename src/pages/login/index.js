@@ -122,9 +122,9 @@ const Login = () => {
                     )}
                   </Form.Group>
                 </div>
-                <div className="d-flex justify-content-end align-items-end mt-2 mb-3">
+                {/* <div className="d-flex justify-content-end align-items-end mt-2 mb-3">
                   <span onClick={() => navigate("/forgot-password")} className="forgot-password">Forgot Password?</span>
-                </div>
+                </div> */}
                 <div>
                   <button
                     type="submit"

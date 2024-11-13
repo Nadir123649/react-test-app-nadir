@@ -1,8 +1,6 @@
 import axios from "axios";
 
-// const baseUrl = "https://api.sellerscout.com";
-const baseUrl = "https://testapi.sellerscout.com";
-// const baseUrl = "http://localhost:5278";
+const baseUrl = "http://localhost:3001";
 
 let authorization;  // Declare without a type
 
@@ -13,7 +11,7 @@ export const token = () => {
 
 export const login = (data) => {
   const { email, password } = data;
-  return axios.post(`${baseUrl}/Account/Login`, {
+  return axios.post(`${baseUrl}/users/sign-in`, {
     email,
     password,
   });
@@ -21,8 +19,8 @@ export const login = (data) => {
 
 export const registeration = (data) => {
   const { userName, email, password } = data;
-  return axios.post(`${baseUrl}/Account/Register`, {
-    userName,
+  return axios.post(`${baseUrl}/users/sign-up`, {
+    name: userName,
     email,
     password,
   });
