@@ -1,4 +1,6 @@
-const home = "/";
-const about = "/about";
+const login = "/";
+const signup = "/signup";
+const home = "/home";
 
-export { home, about };
+
+export { login, signup, home };

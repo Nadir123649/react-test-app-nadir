@@ -1,5 +1,6 @@
-import MainRoute from "./Routes";
+import MainRoute from "./routes";
 import AuthState from "./context";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
