@@ -1,39 +1,28 @@
-import react, { useState } from "react";
-import { useDrag, useDrop } from "react-dnd";
+import React, { useState } from "react";
+import { FaCopy } from "react-icons/fa"; // Importing the copy icon
 
-const FileItem = ({ fileData, index, moveFile }) => {
-    const [{ isDragging }, drag] = useDrag(() => ({
-        type: "file",
-        item: { index },
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    }));
-
-    const [, drop] = useDrop(() => ({
-        accept: "file",
-        hover: (item) => {
-            if (item.index !== index) {
-                moveFile(item.index, index);
-            }
-        },
-    }));
+const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
+    const handleCopyUrl = () => {
+        const fileUrl = window.URL.createObjectURL(fileData.file);
+        copyFileUrl(fileUrl); // Copy the file URL to clipboard
+    };
 
     return (
-        <div
-            ref={(node) => drag(drop(node))}
-            className="p-4 mb-4 border rounded-md shadow-lg hover:bg-gray-100"
-            style={{ opacity: isDragging ? 0.5 : 1 }}
-        >
-            <p className="font-semibold">{fileData.file.name}</p>
-            <div className="flex space-x-2">
+        <div className="file-item">
+            <div className="file-name">{fileData.file.name}</div>
+            <FaCopy
+                onClick={handleCopyUrl}
+                className="copy-icon"
+                title="Copy URL"
+            />
+            <div className="file-details">
                 <input
                     type="text"
+                    className="tag-input"
                     placeholder="Add tags"
-                    className="border rounded px-2 py-1 text-sm"
                     onBlur={(e) => fileData.addTag(e.target.value, index)}
                 />
-                <p className="text-xs text-gray-500">Priority: {fileData.priority}</p>
+                <p className="priority">Priority: {fileData.priority}</p>
             </div>
         </div>
     );
@@ -41,7 +30,6 @@ const FileItem = ({ fileData, index, moveFile }) => {
 
 const FileUpload = () => {
     const [files, setFiles] = useState([]);
-    const [tags, setTags] = useState("");
 
     const moveFile = (fromIndex, toIndex) => {
         const updatedFiles = [...files];
@@ -62,41 +50,62 @@ const FileUpload = () => {
 
     const addTag = (tag, index) => {
         const updatedFiles = [...files];
-        updatedFiles[index].tags.push(tag);
-        setFiles(updatedFiles);
+        if (tag) {
+            updatedFiles[index].tags.push(tag);
+            setFiles(updatedFiles);
+        }
+    };
+
+    const copyFileUrl = (url) => {
+        navigator.clipboard.writeText(url).then(() => {
+            alert("File URL copied to clipboard!");
+        });
+    };
+
+    // Drag and Drop handler
+    const handleDrop = (event) => {
+        event.preventDefault();
+        const droppedFiles = event.dataTransfer.files;
+        const fileArray = [...files];
+        for (let file of droppedFiles) {
+            fileArray.push({ file, tags: [], priority: fileArray.length + 1 });
+        }
+        setFiles(fileArray);
+    };
+
+    const handleDragOver = (event) => {
+        event.preventDefault(); // Allows drop to happen
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-3xl font-bold text-center mb-6">File Upload and Tagging</h1>
-
-
-            <div className="mb-6">
-                <input
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={handleFileUpload}
-                    multiple
-                    className="border p-3 rounded-md w-full bg-white"
-                />
+        <div className="file-upload-container">
+            <h1>File Upload and Tagging</h1>
+            <div
+                className="drag-drop-area"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+            >
+                <p>Drag and drop files here</p>
             </div>
-
-            <div className="space-y-4">
+            <input
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleFileUpload}
+                multiple
+                className="file-input"
+            />
+            <div className="file-upload-list">
                 {files.map((fileData, index) => (
                     <FileItem
                         key={index}
                         index={index}
                         fileData={{ ...fileData, addTag }}
                         moveFile={moveFile}
+                        copyFileUrl={copyFileUrl}
                     />
                 ))}
             </div>
-
-            <div className="mt-6">
-                <button className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
-                    Submit Files
-                </button>
-            </div>
+            <button>Submit Files</button>
         </div>
     );
 };
