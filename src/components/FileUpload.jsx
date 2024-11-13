@@ -1,74 +1,19 @@
 import React, { useState } from "react";
-import { FaCopy } from "react-icons/fa"; // Importing the copy icon
-import { useDrag, useDrop } from "react-dnd"; // Importing necessary hooks from react-dnd
-
-const ItemType = "FILE_ITEM";
-
-// FileItem Component to handle the drag and drop functionality
-const FileItem = ({ fileData, index, moveFile, copyFileUrl, addTag }) => {
-    const [, drag] = useDrag(() => ({
-        type: ItemType,
-        item: { index },
-    }));
-
-    const [, drop] = useDrop(() => ({
-        accept: ItemType,
-        hover: (item) => {
-            if (item.index !== index) {
-                moveFile(item.index, index); // Reorder files on drag hover
-                item.index = index; // Update the index
-            }
-        },
-    }));
-
-    const handleCopyUrl = () => {
-        if (fileData.url) {
-            copyFileUrl(fileData.url); // Copy the live file URL to clipboard
-        }
-    };
-
-    if (!fileData || !fileData.file) return null;
-
-    return (
-        <div ref={(node) => drag(drop(node))} className="file-item">
-            <div className="file-name">{fileData.file.name}</div>
-            <FaCopy
-                onClick={handleCopyUrl}
-                className="copy-icon"
-                title="Copy URL"
-            />
-            <div className="file-details">
-                <input
-                    type="text"
-                    className="tag-input"
-                    placeholder="Add tags"
-                    onBlur={(e) => addTag(e.target.value, index)} // Adding tags on blur
-                />
-            </div>
-        </div>
-    );
-};
+import { FaCopy } from "react-icons/fa";
+import Sortable from "react-sortablejs";
 
 const FileUpload = () => {
     const [files, setFiles] = useState([]);
 
-    // Function to reorder files based on drag and drop
-    const moveFile = (fromIndex, toIndex) => {
-        const updatedFiles = [...files];
-        const [movedFile] = updatedFiles.splice(fromIndex, 1);
-        updatedFiles.splice(toIndex, 0, movedFile);
-        setFiles(updatedFiles);
-    };
-
     // Handle file upload
     const handleFileUpload = (event) => {
-        const newFiles = event.target.files;
+        const newFiles = Array.from(event.target.files);
         const fileArray = [...files];
 
-        // Adding files to the fileArray without priority, just tags
-        for (let file of newFiles) {
+        // Adding files to the fileArray with tags and URL placeholder
+        newFiles.forEach((file) => {
             fileArray.push({ file, tags: [], url: "" });
-        }
+        });
         setFiles(fileArray);
     };
 
@@ -103,10 +48,10 @@ const FileUpload = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                // Assuming the response contains the URLs of uploaded files
+                // Assuming the response contains URLs of uploaded files
                 const updatedFiles = files.map((fileData, index) => ({
                     ...fileData,
-                    url: data.urls[index], // Assuming API returns an array of URLs
+                    url: data.urls[index], // Update with real URLs from API
                 }));
                 setFiles(updatedFiles);
                 console.log("Files uploaded successfully:", data);
@@ -126,21 +71,51 @@ const FileUpload = () => {
                 multiple
                 className="file-input"
             />
-            <div className="file-upload-list">
-                {files.length > 0 ? (
-                    files.map((fileData, index) => (
-                        <FileItem
-                            key={index}
-                            index={index}
-                            fileData={{ ...fileData, addTag }}
-                            moveFile={moveFile}
-                            copyFileUrl={copyFileUrl}
-                        />
-                    ))
-                ) : (
-                    <div className="mt-3">No files uploaded yet.</div>
-                )}
-            </div>
+
+            {/* Table for displaying files */}
+            <table className="file-table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Tags</th>
+                        <th>Copy URL</th>
+                    </tr>
+                </thead>
+                <Sortable
+                    tag="tbody"
+                    onChange={(order) => {
+                        const orderedFiles = order.map((index) => files[index]);
+                        setFiles(orderedFiles);
+                    }}
+                >
+                    {files.map((fileData, index) => (
+                        <tr key={index} data-id={index}>
+                            <td>{fileData.file.name}</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    className="tag-input"
+                                    placeholder="Add tags"
+                                    onBlur={(e) => addTag(e.target.value, index)}
+                                />
+                                {fileData.tags.map((tag, idx) => (
+                                    <span key={idx} className="tag">{tag}</span>
+                                ))}
+                            </td>
+                            <td>
+                                {fileData.url && (
+                                    <FaCopy
+                                        onClick={() => copyFileUrl(fileData.url)}
+                                        className="copy-icon"
+                                        title="Copy URL"
+                                    />
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </Sortable>
+            </table>
+
             <button onClick={handleApiCall}>Submit Files</button>
         </div>
     );
