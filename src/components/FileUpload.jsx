@@ -26,37 +26,39 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
         copyFileUrl(fileUrl); // Copy the file URL to clipboard
     };
 
-    // Ensure fileData and fileData.file are defined before rendering
-    if (!fileData || !fileData.file) return null;
-
     return (
-        <div ref={(node) => drag(drop(node))} className="file-item">
-            <div className="file-name">{fileData.file.name}</div>
-            <FaCopy
-                onClick={handleCopyUrl}
-                className="copy-icon"
-                title="Copy URL"
-            />
-            <div className="file-details">
+        <tr ref={(node) => drag(drop(node))} className="file-item">
+            <td>{fileData.file.name}</td>
+            <td>
                 <input
                     type="text"
                     className="tag-input"
                     placeholder="Add tags"
                     onBlur={(e) => fileData.addTag(e.target.value, index)}
                 />
-            </div>
-        </div>
+            </td>
+            <td>
+                <FaCopy
+                    onClick={handleCopyUrl}
+                    className="copy-icon"
+                    title="Copy URL"
+                />
+            </td>
+        </tr>
     );
 };
 
 const FileUpload = () => {
     const [files, setFiles] = useState([]);
 
-    // Function to reorder files based on drag and drop
+    // Function to reorder files based on drag and drop (handle priorities)
     const moveFile = (fromIndex, toIndex) => {
         const updatedFiles = [...files];
         const [movedFile] = updatedFiles.splice(fromIndex, 1);
         updatedFiles.splice(toIndex, 0, movedFile);
+        updatedFiles.forEach((file, index) => {
+            file.priority = index + 1; // Update priority after reorder
+        });
         setFiles(updatedFiles);
     };
 
@@ -64,10 +66,8 @@ const FileUpload = () => {
     const handleFileUpload = (event) => {
         const newFiles = event.target.files;
         const fileArray = [...files];
-
-        // Adding files to the fileArray without priority, just tags
         for (let file of newFiles) {
-            fileArray.push({ file, tags: [] });
+            fileArray.push({ file, tags: [], priority: fileArray.length + 1 });
         }
         setFiles(fileArray);
     };
@@ -86,6 +86,20 @@ const FileUpload = () => {
         navigator.clipboard.writeText(url).then(() => {
             alert("File URL copied to clipboard!");
         });
+    };
+
+    const handleDrop = (event) => {
+        event.preventDefault();
+        const droppedFiles = event.dataTransfer.files;
+        const fileArray = [...files];
+        for (let file of droppedFiles) {
+            fileArray.push({ file, tags: [], priority: fileArray.length + 1 });
+        }
+        setFiles(fileArray);
+    };
+
+    const handleDragOver = (event) => {
+        event.preventDefault(); // Allows drop to happen
     };
 
     // Function to prepare and send the file data to an API
@@ -113,28 +127,48 @@ const FileUpload = () => {
     return (
         <div className="file-upload-container">
             <h1>File Upload and Tagging</h1>
-            <input
-                type="file"
-                accept="image/*,video/*"
-                onChange={handleFileUpload}
-                multiple
-                className="file-input"
-            />
-            <div className="file-upload-list">
-                {files.length > 0 ? (
-                    files.map((fileData, index) => (
-                        <FileItem
-                            key={index}
-                            index={index}
-                            fileData={{ ...fileData, addTag }}
-                            moveFile={moveFile}
-                            copyFileUrl={copyFileUrl}
-                        />
-                    ))
-                ) : (
-                    <div>No files uploaded yet.</div>
-                )}
+            <div
+                className="drag-drop-area"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+            >
+                <p>Drag and drop files here</p>
+                <input
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handleFileUpload}
+                    multiple
+                    className="file-input"
+                />
             </div>
+
+            <table className="file-upload-table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Tags</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {files.length > 0 ? (
+                        files.map((fileData, index) => (
+                            <FileItem
+                                key={index}
+                                index={index}
+                                fileData={{ ...fileData, addTag }}
+                                moveFile={moveFile}
+                                copyFileUrl={copyFileUrl}
+                            />
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="3">No files uploaded yet.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+
             <button onClick={handleApiCall}>Submit Files</button>
         </div>
     );

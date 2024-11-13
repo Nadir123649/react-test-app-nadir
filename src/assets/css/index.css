@@ -585,6 +585,40 @@ main {
   background-color: #f0f4f8;
 }
 
+.drag-drop-area {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.file-upload-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.file-upload-table th,
+.file-upload-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.file-upload-table th {
+  background-color: #f4f4f4;
+}
+
+.tag-input {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.copy-icon {
+  cursor: pointer;
+  color: blue;
+}
+
 .file-item:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background-color: #f7fafc;
