@@ -4,6 +4,7 @@ import { useDrag, useDrop } from "react-dnd"; // Importing necessary hooks from 
 
 const ItemType = "FILE_ITEM";
 
+// FileItem Component to handle the drag and drop functionality
 const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
     const [, drag] = useDrag(() => ({
         type: ItemType,
@@ -14,8 +15,8 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
         accept: ItemType,
         hover: (item) => {
             if (item.index !== index) {
-                moveFile(item.index, index);
-                item.index = index;
+                moveFile(item.index, index); // Reorder files on drag hover
+                item.index = index; // Update the index
             }
         },
     }));
@@ -25,7 +26,7 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
         copyFileUrl(fileUrl); // Copy the file URL to clipboard
     };
 
-    // Check if fileData and fileData.file are defined
+    // Ensure fileData and fileData.file are defined before rendering
     if (!fileData || !fileData.file) return null;
 
     return (
@@ -51,7 +52,7 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
 const FileUpload = () => {
     const [files, setFiles] = useState([]);
 
-    // Move file to reorder based on drag and drop
+    // Function to reorder files based on drag and drop
     const moveFile = (fromIndex, toIndex) => {
         const updatedFiles = [...files];
         const [movedFile] = updatedFiles.splice(fromIndex, 1);
@@ -59,6 +60,7 @@ const FileUpload = () => {
         setFiles(updatedFiles);
     };
 
+    // Handle file upload
     const handleFileUpload = (event) => {
         const newFiles = event.target.files;
         const fileArray = [...files];
@@ -70,6 +72,7 @@ const FileUpload = () => {
         setFiles(fileArray);
     };
 
+    // Function to add tags to files
     const addTag = (tag, index) => {
         const updatedFiles = [...files];
         if (tag) {
@@ -78,22 +81,22 @@ const FileUpload = () => {
         }
     };
 
+    // Function to copy file URL to clipboard
     const copyFileUrl = (url) => {
         navigator.clipboard.writeText(url).then(() => {
             alert("File URL copied to clipboard!");
         });
     };
 
-    // Function to prepare payload and send API request
+    // Function to prepare and send the file data to an API
     const handleApiCall = () => {
-        // Prepare FormData payload
         const formData = new FormData();
         files.forEach((fileData, index) => {
-            formData.append(`file-${index}`, fileData.file); // appending file
-            formData.append(`tags-${index}`, JSON.stringify(fileData.tags)); // appending tags
+            formData.append(`file-${index}`, fileData.file); // append file to FormData
+            formData.append(`tags-${index}`, JSON.stringify(fileData.tags)); // append tags to FormData
         });
 
-        // Example API request (you can replace with your actual API endpoint)
+        // Send FormData to an API endpoint
         fetch("https://your-api-endpoint.com/upload", {
             method: "POST",
             body: formData,
