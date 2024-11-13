@@ -1,14 +1,35 @@
 import React, { useState } from "react";
 import { FaCopy } from "react-icons/fa"; // Importing the copy icon
+import { useDrag, useDrop } from "react-dnd"; // Importing necessary hooks from react-dnd
+
+const ItemType = "FILE_ITEM";
 
 const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
+    const [, drag] = useDrag(() => ({
+        type: ItemType,
+        item: { index },
+    }));
+
+    const [, drop] = useDrop(() => ({
+        accept: ItemType,
+        hover: (item) => {
+            if (item.index !== index) {
+                moveFile(item.index, index);
+                item.index = index;
+            }
+        },
+    }));
+
     const handleCopyUrl = () => {
         const fileUrl = window.URL.createObjectURL(fileData.file);
         copyFileUrl(fileUrl); // Copy the file URL to clipboard
     };
 
+    // Check if fileData and fileData.file are defined
+    if (!fileData || !fileData.file) return null;
+
     return (
-        <div className="file-item">
+        <div ref={(node) => drag(drop(node))} className="file-item">
             <div className="file-name">{fileData.file.name}</div>
             <FaCopy
                 onClick={handleCopyUrl}
@@ -22,7 +43,6 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
                     placeholder="Add tags"
                     onBlur={(e) => fileData.addTag(e.target.value, index)}
                 />
-                <p className="priority">Priority: {fileData.priority}</p>
             </div>
         </div>
     );
@@ -31,19 +51,21 @@ const FileItem = ({ fileData, index, moveFile, copyFileUrl }) => {
 const FileUpload = () => {
     const [files, setFiles] = useState([]);
 
+    // Move file to reorder based on drag and drop
     const moveFile = (fromIndex, toIndex) => {
         const updatedFiles = [...files];
         const [movedFile] = updatedFiles.splice(fromIndex, 1);
         updatedFiles.splice(toIndex, 0, movedFile);
-        updatedFiles.forEach((file, index) => (file.priority = index + 1));
         setFiles(updatedFiles);
     };
 
     const handleFileUpload = (event) => {
         const newFiles = event.target.files;
         const fileArray = [...files];
+
+        // Adding files to the fileArray without priority, just tags
         for (let file of newFiles) {
-            fileArray.push({ file, tags: [], priority: fileArray.length + 1 });
+            fileArray.push({ file, tags: [] });
         }
         setFiles(fileArray);
     };
@@ -62,51 +84,55 @@ const FileUpload = () => {
         });
     };
 
-    // Drag and Drop handler
-    const handleDrop = (event) => {
-        event.preventDefault();
-        const droppedFiles = event.dataTransfer.files;
-        const fileArray = [...files];
-        for (let file of droppedFiles) {
-            fileArray.push({ file, tags: [], priority: fileArray.length + 1 });
-        }
-        setFiles(fileArray);
-    };
+    // Function to prepare payload and send API request
+    const handleApiCall = () => {
+        // Prepare FormData payload
+        const formData = new FormData();
+        files.forEach((fileData, index) => {
+            formData.append(`file-${index}`, fileData.file); // appending file
+            formData.append(`tags-${index}`, JSON.stringify(fileData.tags)); // appending tags
+        });
 
-    const handleDragOver = (event) => {
-        event.preventDefault(); // Allows drop to happen
+        // Example API request (you can replace with your actual API endpoint)
+        fetch("https://your-api-endpoint.com/upload", {
+            method: "POST",
+            body: formData,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("Files uploaded successfully:", data);
+            })
+            .catch((error) => {
+                console.error("Error uploading files:", error);
+            });
     };
 
     return (
         <div className="file-upload-container">
             <h1>File Upload and Tagging</h1>
-            <div
-                className="drag-drop-area d-flex justify-content-center align-items-center flex-column"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-            >
-                <p>Drag and drop files here</p>
-                <input
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={handleFileUpload}
-                    multiple
-                    className="file-input"
-                />
-            </div>
-
+            <input
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleFileUpload}
+                multiple
+                className="file-input"
+            />
             <div className="file-upload-list">
-                {files.map((fileData, index) => (
-                    <FileItem
-                        key={index}
-                        index={index}
-                        fileData={{ ...fileData, addTag }}
-                        moveFile={moveFile}
-                        copyFileUrl={copyFileUrl}
-                    />
-                ))}
+                {files.length > 0 ? (
+                    files.map((fileData, index) => (
+                        <FileItem
+                            key={index}
+                            index={index}
+                            fileData={{ ...fileData, addTag }}
+                            moveFile={moveFile}
+                            copyFileUrl={copyFileUrl}
+                        />
+                    ))
+                ) : (
+                    <div>No files uploaded yet.</div>
+                )}
             </div>
-            <button>Submit Files</button>
+            <button onClick={handleApiCall}>Submit Files</button>
         </div>
     );
 };
