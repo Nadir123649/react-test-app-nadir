@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import DraggableTable from "./DataTable";
 import { getFiles, uploadFile } from "../Service/services";
+import { ProgressSpinner } from "primereact/progressspinner";
 const FileUpload = () => {
   const [file, setFile] = useState(null);
   const [filesData, setFilesData] = useState([]);
+  const [loader, setLoader] = useState(false);
   const fileInputRef = useRef(null);
   // Handle file upload
   const handleFileUpload = (event) => {
@@ -12,8 +14,8 @@ const FileUpload = () => {
   };
   // Handle API call
   const handleApiCall = async () => {
+    setLoader(true);
     const formData = new FormData();
-    console.log("files", file);
     formData.append("file", file);
     const response = await uploadFile(formData);
     if (response.data) {
@@ -31,9 +33,11 @@ const FileUpload = () => {
       fileInputRef.current.value = "";
       setFile(null);
     }
+    setLoader(false);
   };
 
   const fetchFiles = async () => {
+    setLoader(true);
     const resp = await getFiles();
     const tableData = resp.data.map((info) => {
       return {
@@ -45,6 +49,7 @@ const FileUpload = () => {
       };
     });
     setFilesData(tableData);
+    setLoader(false);
   };
 
   useEffect(() => {
@@ -53,6 +58,19 @@ const FileUpload = () => {
   return (
     <div className="file-upload-container">
       <h1>File Upload</h1>
+      {loader && (
+        <div
+          style={{ position: "fixed", top: "50%", left: "50%", zIndex: 2 }}
+          className="spinner-container"
+        >
+          <ProgressSpinner
+            style={{ width: "50px", height: "50px" }}
+            strokeWidth="8"
+            fill="var(--surface-ground)"
+            animationDuration=".5s"
+          />
+        </div>
+      )}
       <input
         type="file"
         accept="image/*,video/*"
@@ -61,13 +79,17 @@ const FileUpload = () => {
         ref={fileInputRef}
       />
       <button
-        style={{ opacity: file ? 1 : 0.3 }}
-        disabled={file ? false : true}
+        style={{ opacity: !file || loader ? 0.3 : 1 }}
+        disabled={!file || loader}
         onClick={handleApiCall}
       >
         Submit File
       </button>
-      <DraggableTable data={filesData} />
+      <DraggableTable
+        data={filesData}
+        setLoader={setLoader}
+        setFilesData={setFilesData}
+      />
     </div>
   );
 };

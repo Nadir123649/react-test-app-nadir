@@ -22,7 +22,7 @@ const Details = () => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(details.url);
+    navigator.clipboard.writeText(details.fileUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

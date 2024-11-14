@@ -6,7 +6,7 @@ import { Toast } from "primereact/toast";
 import "primereact/resources/themes/saga-blue/theme.css"; // Use a theme if not already imported
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import { changePriority } from "../Service/services";
+import { changePriority, getFiles } from "../Service/services";
 import { useNavigate } from "react-router-dom";
 
 const DraggableTable = (props) => {
@@ -19,10 +19,9 @@ const DraggableTable = (props) => {
   }, [props.data]);
 
   const onRowReorder = async (e) => {
+    props.setLoader(true);
     let priority1 = e.value[0].priority;
     let priority2 = e.value[1].priority;
-    e.value[0].priority = priority2;
-    e.value[1].priority = priority1;
     setData(e.value); // Update the data array after reordering
     const updatedData = [
       {
@@ -35,6 +34,9 @@ const DraggableTable = (props) => {
       },
     ];
     await changePriority(updatedData);
+    const resp = await getFiles();
+    props.setFilesData(resp.data);
+    props.setLoader(false);
   };
 
   const copyToClipboard = (url) => {
