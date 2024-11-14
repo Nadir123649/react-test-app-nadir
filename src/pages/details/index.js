@@ -39,7 +39,7 @@ const Details = () => {
           <button
             className="copy-url-button"
             onClick={handleCopy}
-            style={{ backgroundColor: copied ? "#005fa3" : "#007ad9" }}
+            style={{ backgroundColor: copied ? "#461694FF" : "#4b1b97" }}
           >
             {copied ? "Copied!" : "Copy URL"}
           </button>

@@ -57,7 +57,7 @@ const DraggableTable = (props) => {
         <i
           className="pi pi-eye"
           onClick={() => navigate(`/details/${rowData.id}`)}
-          style={{ fontSize: "1.2rem", color: "#007ad9" }}
+          style={{ fontSize: "1.2rem", color: "#4b1b97" }}
           title="Copy URL"
         ></i>
       </div>
@@ -74,7 +74,7 @@ const DraggableTable = (props) => {
         <i
           className="pi pi-copy"
           onClick={() => copyToClipboard(rowData.fileUrl)}
-          style={{ fontSize: "1.2rem", color: "#007ad9" }}
+          style={{ fontSize: "1.2rem", color: "#4b1b97" }}
           title="Copy URL"
         ></i>
       </div>

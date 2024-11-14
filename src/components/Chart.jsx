@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#4b1b97", "#00C49F", "#FFBB28", "#FF8042"];
 
 const Chart = ({ data }) => {
   return (

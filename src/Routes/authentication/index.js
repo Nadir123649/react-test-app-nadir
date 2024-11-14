@@ -15,16 +15,6 @@ const authRoutes = [
     component: Login,
     path: login,
   },
-  {
-    title: "home",
-    component: Home,
-    path: home,
-  },
-  {
-    title: "details",
-    component: Details,
-    path: details,
-  },
 ];
 
 export default authRoutes;

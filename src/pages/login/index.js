@@ -10,8 +10,8 @@ import LoginSlider from "../../components/LoginSlider";
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isInput, setIsInput] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [redirectToMain, setRedirectToMain] = useState(false);
   const [isCustomError, setIsCustomError] = useState(false);
@@ -36,13 +36,13 @@ const Login = () => {
       const response = await login(data);
       if (response.status === 200) {
         const accessTokenId = response.data.token;
-        localStorage.setItem('accessToken', accessTokenId);
-        navigate('/home');
+        localStorage.setItem("accessToken", accessTokenId);
+        window.location.href = "/home";
       } else {
-        setIsCustomError('Try again');
+        setIsCustomError("Try again");
       }
     } catch (error) {
-      setIsCustomError('Email or password is incorrect');
+      setIsCustomError("Email or password is incorrect");
     } finally {
       setLoading(false);
     }
@@ -60,15 +60,24 @@ const Login = () => {
           <Col lg={5} md={12} xs={12} className="p-0">
             <LoginSlider />
           </Col>
-          <Col lg={7} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
+          <Col
+            lg={7}
+            md={12}
+            xs={12}
+            className="p-0 d-flex justify-content-center align-items-center"
+          >
             <div className="login-form-section">
               <div className="login-form-content">
-                <h1 className="mb-2">Sign in at <span>Comapany</span></h1>
+                <h1 className="mb-2">
+                  Sign in at <span>Comapany</span>
+                </h1>
                 <p>Empower your experience, sign in for a account today</p>
               </div>
               <Form onSubmit={handleSubmit(onSubmit)}>
                 {isCustomError ? (
-                  <span className="error-message text-danger sapn-text-error mb-3">{isCustomError}</span>
+                  <span className="error-message text-danger sapn-text-error mb-3">
+                    {isCustomError}
+                  </span>
                 ) : null}
                 <Form.Group className="mb-3">
                   <FormLabel className="label-text">Work email*</FormLabel>
@@ -79,7 +88,8 @@ const Login = () => {
                     {...register("email", {
                       required: "*Please enter your email",
                       pattern: {
-                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                        value:
+                          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                         message: "Please enter a valid email address",
                       },
                     })}
@@ -91,7 +101,10 @@ const Login = () => {
                   )}
                 </Form.Group>
                 <div className="mb-0 password-cont">
-                  <Form.Group className="mb-3 relative" controlId="formBasicPassword">
+                  <Form.Group
+                    className="mb-3 relative"
+                    controlId="formBasicPassword"
+                  >
                     <FormLabel className="label-text">Password*</FormLabel>
                     <Form.Control
                       type={isPasswordVisible ? "text" : "password"}
@@ -100,7 +113,8 @@ const Login = () => {
                       {...register("password", {
                         required: "*Please enter your password",
                         pattern: {
-                          value: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:"<>?])[A-Za-z\d!@#$%^&*()_+{}|:"<>?]+$/,
+                          value:
+                            /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:"<>?])[A-Za-z\d!@#$%^&*()_+{}|:"<>?]+$/,
                           message: "Password is incorrect",
                         },
                       })}
@@ -144,7 +158,8 @@ const Login = () => {
                   </button>
                 </div>
                 <p className="create-account text-center">
-                  Don’t have an account? <span onClick={() => navigate("/signup")}>Sign Up</span>
+                  Don’t have an account?{" "}
+                  <span onClick={() => navigate("/signup")}>Sign Up</span>
                 </p>
               </Form>
             </div>
