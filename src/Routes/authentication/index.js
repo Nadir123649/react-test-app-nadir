@@ -1,7 +1,8 @@
 import Signup from "../../pages/signup";
 import Login from "../../pages/login";
 import Home from "../../pages/home";
-import { signup, login, home } from "../pathName";
+import { signup, login, home, details } from "../pathName";
+import Details from "../../pages/details";
 
 const authRoutes = [
   {
@@ -19,7 +20,11 @@ const authRoutes = [
     component: Home,
     path: home,
   },
-
+  {
+    title: "details",
+    component: Details,
+    path: details,
+  },
 ];
 
 export default authRoutes;

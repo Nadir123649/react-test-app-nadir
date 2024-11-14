@@ -44,6 +44,33 @@ export const getFiles = () => {
   });
 };
 
+export const changePriority = (data) => {
+  token()
+  return axios.put(`${baseUrl}/files/update-priority`,data,{
+    headers: {
+      Authorization: authorization,
+    }
+  });
+};
+
+export const getDetail = (id) => {
+  token()
+  return axios.get(`${baseUrl}/files/${id}`,{
+    headers: {
+      Authorization: authorization,
+    }
+  });
+};
+
+export const getView = (id) => {
+  token()
+  return axios.get(`${baseUrl}/files/update-view/${id}`,{
+    headers: {
+      Authorization: authorization,
+    }
+  });
+};
+
 export const logout = () => {
   localStorage.removeItem('accessToken')
 };

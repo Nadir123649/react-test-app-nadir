@@ -1,16 +1,12 @@
-import React from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import FileUpload from '../../components/FileUpload';
-import NewFileUpload from '../../components/NewFileUpload';
+import React from "react";
+import FileUpload from "../../components/FileUpload";
 
 const Home = () => {
-    return (
-        <div>
-            {/* <FileUpload /> */}
-            <NewFileUpload />
-        </div>
-    );
-}
+  return (
+    <div>
+      <FileUpload />
+    </div>
+  );
+};
 
 export default Home;
