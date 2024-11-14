@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseUrl = "http://localhost:3001";
 
-let authorization;  // Declare without a type
+let authorization; // Declare without a type
 
 export const token = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -27,50 +27,50 @@ export const registeration = (data) => {
 };
 
 export const uploadFile = (data) => {
-  token()
+  token();
   return axios.post(`${baseUrl}/files/upload`, data, {
     headers: {
       Authorization: authorization,
-    }
+    },
   });
 };
 
 export const getFiles = () => {
-  token()
-  return axios.get(`${baseUrl}/files/list/details`,{
+  token();
+  return axios.get(`${baseUrl}/files/list/details`, {
     headers: {
       Authorization: authorization,
-    }
+    },
   });
 };
 
 export const changePriority = (data) => {
-  token()
-  return axios.put(`${baseUrl}/files/update-priority`,data,{
+  token();
+  return axios.put(`${baseUrl}/files/update-priority`, data, {
     headers: {
       Authorization: authorization,
-    }
+    },
   });
 };
 
 export const getDetail = (id) => {
-  token()
-  return axios.get(`${baseUrl}/files/${id}`,{
+  token();
+  return axios.get(`${baseUrl}/files/${id}`, {
     headers: {
       Authorization: authorization,
-    }
+    },
   });
 };
 
 export const getView = (id) => {
-  token()
-  return axios.get(`${baseUrl}/files/update-view/${id}`,{
+  token();
+  return axios.get(`${baseUrl}/files/update-view/${id}`, {
     headers: {
       Authorization: authorization,
-    }
+    },
   });
 };
 
 export const logout = () => {
-  localStorage.removeItem('accessToken')
+  localStorage.removeItem("accessToken");
 };
