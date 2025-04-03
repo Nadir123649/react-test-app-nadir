@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { Col, Container, Form, FormLabel, Row, Spinner } from "react-bootstrap";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
-import { registeration } from "../../Service/services";
-import LoginSlider from "../../components/LoginSlider";
+import { registeration } from "../../service/services";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [redirectToMain, setRedirectToMain] = useState(false);
-  const [iscustomerror, setIsCustomError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
@@ -23,20 +22,19 @@ const Signup = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const onSubmit = async (data, event) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await registeration(data);
-      if (response.status === 200) {
-        const accessTokenId = response.data.accessToken;
-        localStorage.setItem('accessToken', accessTokenId);
-        navigate('/');
+
+      if (response.status === 201) {
+        toast.success("User Registration successful!");
+        setTimeout(() => navigate("/"), 1500);
       } else {
-        setIsCustomError('Try again');
+        toast.error("Signup failed. Please try again.");
       }
     } catch (error) {
-      setIsCustomError(error.response.data.ErrorMessage);
+      toast.error("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,21 +43,35 @@ const Signup = () => {
   return (
     <>
       <Container fluid>
-        {redirectToMain && <Navigate to="/home" />}
-        <Row>
-          <Col lg={5} md={12} xs={12} className="p-0">
-            <LoginSlider />
-          </Col>
-          <Col lg={7} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
+        <Row className="main-row">
+          <Col lg={12} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
             <div className="login-form-section">
               <div className="login-form-content">
-                <h1 className="mb-2">Sign Up at <span> Company</span></h1>
+                <h1 className="mb-2">Sign up <span> Fisheries</span></h1>
                 <p>Empower your experience, Sign up for a account today</p>
               </div>
               <Form onSubmit={handleSubmit(onSubmit)}>
-                {iscustomerror ? (
-                  <span className="error-message text-danger sapn-text-error">{iscustomerror}</span>
-                ) : null}
+                <Form.Group className="mb-3">
+                  <FormLabel className="label-text">User name*</FormLabel>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your user name"
+                    className="form-input-text"
+                    {...register("username", {
+                      required: "*Please enter your user name",
+                      minLength: {
+                        value: 3,
+                        message: "User name must be at least 3 characters long",
+                      },
+                    })}
+                  />
+                  {errors.username && (
+                    <span className="error-message text-danger sapn-text-error">
+                      {errors.username.message}
+                    </span>
+                  )}
+                </Form.Group>
+
                 <Form.Group className="mb-3">
                   <FormLabel className="label-text">Work email*</FormLabel>
                   <Form.Control
@@ -80,24 +92,27 @@ const Signup = () => {
                     </span>
                   )}
                 </Form.Group>
-                <div className="mb-0 password-cont">
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <FormLabel className="label-text">Username*</FormLabel>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Username"
-                      className="form-input-text"
-                      {...register("userName", {
-                        required: "*Please enter username",
-                      })}
-                    />
-                    {errors.userName && (
-                      <span className="error-message text-danger sapn-text-error">
-                        {errors.userName.message}
-                      </span>
-                    )}
-                  </Form.Group>
-                </div>
+
+                <Form.Group className="mb-3">
+                  <FormLabel className="label-text">Select Role*</FormLabel>
+                  <Form.Select
+                    className="form-input-text"
+                    {...register("role", {
+                      required: "*Please select a role",
+                    })}
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="manager">Manager</option>
+                    <option value="enumerator">Enumerator</option>
+                  </Form.Select>
+                  {errors.role && (
+                    <span className="error-message text-danger sapn-text-error">
+                      {errors.role.message}
+                    </span>
+                  )}
+                </Form.Group>
+
                 <div className="mb-0 password-cont">
                   <Form.Group className="mb-3" controlId="formBasicPassword">
                     <FormLabel className="label-text">Password*</FormLabel>
@@ -130,6 +145,7 @@ const Signup = () => {
                     )}
                   </Form.Group>
                 </div>
+
                 <div className="mt-4">
                   <button type="submit" className="login-btn">
                     {!loading ? (

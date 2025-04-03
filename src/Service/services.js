@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3001";
+const baseUrl = "http://localhost:5000";
 
 let authorization;  // Declare without a type
 
@@ -11,17 +11,18 @@ export const token = () => {
 
 export const login = (data) => {
   const { email, password } = data;
-  return axios.post(`${baseUrl}/users/sign-in`, {
+  return axios.post(`${baseUrl}/api/user/login`, {
     email,
     password,
   });
 };
 
 export const registeration = (data) => {
-  const { userName, email, password } = data;
-  return axios.post(`${baseUrl}/users/sign-up`, {
-    name: userName,
+  const { username, email, password, role } = data;
+  return axios.post(`${baseUrl}/api/user/signup`, {
+    username,
     email,
+    role,
     password,
   });
 };

@@ -4,8 +4,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
-import { login } from "../../Service/services";
-import LoginSlider from "../../components/LoginSlider";
+import { login } from "../../service/services";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -16,7 +16,6 @@ const Login = () => {
   const [redirectToMain, setRedirectToMain] = useState(false);
   const [isCustomError, setIsCustomError] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
   const {
     register,
@@ -39,12 +38,13 @@ const Login = () => {
         const userProfile = JSON.stringify(response.data.userProfile);
         localStorage.setItem('accessToken', accessTokenId);
         localStorage.setItem('userProfile', userProfile);
+        toast.success("User login successfully!");
         navigate('/home');
       } else {
-        setIsCustomError('Try again');
+        toast.error("Invalid email or password.");
       }
     } catch (error) {
-      setIsCustomError('Email or password is incorrect');
+      toast.error('Email or password is incorrect');
     } finally {
       setLoading(false);
     }
@@ -58,22 +58,17 @@ const Login = () => {
     <>
       <Container fluid>
         {redirectToMain && <Navigate to="/home" />}
-        <Row>
-          <Col lg={5} md={12} xs={12} className="p-0">
-            <LoginSlider />
-          </Col>
-          <Col lg={7} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
+        <Row className="main-row">
+          <Col lg={12} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
             <div className="login-form-section">
               <div className="login-form-content">
-                <h1 className="mb-2">Sign in at <span>Comapany</span></h1>
+                <h1 className="mb-2">Login at <span>Fisheries</span></h1>
                 <p>Empower your experience, sign in for a account today</p>
               </div>
               <Form onSubmit={handleSubmit(onSubmit)}>
-                {isCustomError ? (
-                  <span className="error-message text-danger sapn-text-error mb-3">{isCustomError}</span>
-                ) : null}
+
                 <Form.Group className="mb-3">
-                  <FormLabel className="label-text">Work email*</FormLabel>
+                  <FormLabel className="label-text">Email*</FormLabel>
                   <Form.Control
                     type="email"
                     placeholder="Enter your email"
@@ -92,6 +87,7 @@ const Login = () => {
                     </span>
                   )}
                 </Form.Group>
+
                 <div className="mb-0 password-cont">
                   <Form.Group className="mb-3 relative" controlId="formBasicPassword">
                     <FormLabel className="label-text">Password*</FormLabel>
@@ -122,9 +118,6 @@ const Login = () => {
                     )}
                   </Form.Group>
                 </div>
-                {/* <div className="d-flex justify-content-end align-items-end mt-2 mb-3">
-                  <span onClick={() => navigate("/forgot-password")} className="forgot-password">Forgot Password?</span>
-                </div> */}
                 <div>
                   <button
                     type="submit"

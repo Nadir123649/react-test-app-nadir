@@ -42,7 +42,7 @@ main {
 }
 
 .login-form-content {
-  padding-bottom: 50px;
+  padding-bottom: 18px;
 }
 
 .login-form-content h1 {
@@ -192,12 +192,9 @@ main {
   font-family: 'Outfit', sans-serif !important;
   color: #e74c3c;
   font-size: 14px;
-  background-color: #f8d7da;
-  padding: 10px;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  margin-top: 10px !important;
-  margin-top: 10px;
+  text-align: left !important;
+  margin-top: 6px !important;
+  margin-top: 6px !important;
   width: 100%;
   max-width: 100%;
   display: block;
@@ -666,6 +663,10 @@ main {
 .file-item .priority {
   font-size: 0.9rem;
   color: #718096;
+}
+
+.main-row{
+  min-height: 100vh;
 }
 
 @media (max-width: 768px) {
