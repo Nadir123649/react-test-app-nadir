@@ -37,15 +37,15 @@ const Home = () => {
 
     return (
         <section className='bg-black min-h-screen text-white'>
-            <Container className='py-5'>
-                <h1 className="font-semibold text-[16px] text-[#FF7A32] mt-3 md:text-[28px]">
-                    Hello George!
+            <Container fluid className='py-3 px-5'>
+                <h1 className="font-semibold text-[18px] text-[#FF7A32] mt-3 md:text-[28px]">
+                    Dashboard
                 </h1>
                 <div className='flex justify-between items-center mt-4 mb-4'>
-                    <h2 className="text-[24px] font-bold">User Details</h2>
+                    <h2 className="text-[24px] font-bold">Vessels Details!</h2>
                     <button
                         className="bg-[#FF7A32] px-4 py-2 rounded text-white font-medium hover:bg-[#E66928] transition duration-300">
-                        Export CSV
+                       Add Vessel Assignment
                     </button>
                 </div>
                 <div className="bg-white p-4 rounded-lg">
