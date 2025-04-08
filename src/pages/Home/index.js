@@ -3,21 +3,36 @@ import { Container } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
 const Home = () => {
-    const [users, setUsers] = useState([]);
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const dummyData = [
-            { first_name: 'John', sur_name: 'Doe', email: 'john.doe@example.com' },
-            { first_name: 'Jane', sur_name: 'Smith', email: 'jane.smith@example.com' },
-            { first_name: 'James', sur_name: 'Brown', email: 'james.brown@example.com' },
-            { first_name: 'Emily', sur_name: 'Davis', email: 'emily.davis@example.com' },
-            { first_name: 'John', sur_name: 'Doe', email: 'john.doe@example.com' },
-            { first_name: 'Jane', sur_name: 'Smith', email: 'jane.smith@example.com' },
-            { first_name: 'James', sur_name: 'Brown', email: 'james.brown@example.com' },
-            { first_name: 'Emily', sur_name: 'Davis', email: 'emily.davis@example.com' },
+            {
+                total_entries: 120,
+                entries_by_region: 'Somali Coastal Region',
+                top_fish_species: 'Tuna',
+                avg_catch_size: '15 kg',
+                foreign_vessel_sightings: 5,
+            },
+            {
+                total_entries: 95,
+                entries_by_region: 'Somali Coastal Region',
+                top_fish_species: 'Mackerel',
+                avg_catch_size: '12 kg',
+                foreign_vessel_sightings: 3,
+            },
+            {
+                total_entries: 150,
+                entries_by_region: 'Somali Coastal Region',
+                top_fish_species: 'Sardine',
+                avg_catch_size: '8 kg',
+                foreign_vessel_sightings: 7,
+            },
+            // Add more data as needed
         ];
-        setUsers(dummyData);
+
+        setData(dummyData);
         setLoading(false);
     }, []);
 
@@ -28,23 +43,28 @@ const Home = () => {
             sortable: true,
         },
         {
-            name: 'Name',
-            selector: (row) => row.first_name,
+            name: 'Total Entries',
+            selector: (row) => row.total_entries,
             sortable: true,
         },
         {
-            name: 'Sur name',
-            selector: (row) => row.sur_name,
+            name: 'Entries by Region',
+            selector: (row) => row.entries_by_region,
             sortable: true,
         },
         {
-            name: 'Email Address',
-            selector: (row) => row.email,
+            name: 'Top Fish Species',
+            selector: (row) => row.top_fish_species,
             sortable: true,
         },
         {
-            name: 'Role',
-            selector: (row) => "User",
+            name: 'Average Catch Size',
+            selector: (row) => row.avg_catch_size,
+            sortable: true,
+        },
+        {
+            name: 'Foreign Vessel Sightings',
+            selector: (row) => row.foreign_vessel_sightings,
             sortable: true,
         },
     ];
@@ -56,7 +76,7 @@ const Home = () => {
                     Dashboard
                 </h1>
                 <div className='flex justify-between items-center mt-4 mb-4'>
-                    <h2 className="text-[24px] font-bold">Vessels Details!</h2>
+                    <h2 className="text-[24px] font-bold">Vessel and Fishing Data</h2>
                     <button
                         className="bg-[#FF7A32] px-4 py-2 rounded text-white font-medium hover:bg-[#E66928] transition duration-300">
                         Add Vessel Assignment
@@ -65,7 +85,7 @@ const Home = () => {
                 <div className="bg-white p-4 rounded-lg">
                     <DataTable
                         columns={columns}
-                        data={users}
+                        data={data}
                         progressPending={loading}
                         pagination
                         highlightOnHover

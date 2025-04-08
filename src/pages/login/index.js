@@ -13,7 +13,6 @@ const Login = () => {
     email: '',
     password: '',
   });
-  const [redirectToMain, setRedirectToMain] = useState(false);
   const [isCustomError, setIsCustomError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -57,7 +56,6 @@ const Login = () => {
   return (
     <>
       <Container fluid>
-        {redirectToMain && <Navigate to="/home" />}
         <Row className="main-row">
           <Col lg={12} md={12} xs={12} className="p-0 d-flex justify-content-center align-items-center">
             <div className="login-form-section">
