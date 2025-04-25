@@ -10,8 +10,8 @@ export const token = () => {
 };
 
 export const login = (data) => {
-  const { email, password } = data;
-  return axios.post(`${baseUrl}/api/user/login`, {
+  const { email, password } = data; 
+  return axios.post(`${baseUrl}/api/auth/login`, {
     email,
     password,
   });

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Form, Spinner } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const regions = [
     "Bari",
@@ -13,47 +15,76 @@ const regions = [
 ];
 
 const GeneralInformation = () => {
-    const [date, setDate] = useState("");
-    const [region, setRegion] = useState("");
-    const [landingSite, setLandingSite] = useState("");
-    const [enumeratorName, setEnumeratorName] = useState("John Doe");
+    const [formData, setFormData] = useState({
+        date: '',
+        region: '',
+        landingSite: '',
+        gpsLocation: '',
+    });
+    const navigate = useNavigate();
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [gpsLocation, setGpsLocation] = useState("");
+    const username = localStorage.getItem('username');
 
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
     useEffect(() => {
         const today = new Date().toISOString().split("T")[0];
-        setDate(today);
+        setFormData((prev) => ({ ...prev, date: today }));
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const coords = `${position.coords.latitude}, ${position.coords.longitude}`;
-                setGpsLocation(coords);
-            },
-            () => {
-                setGpsLocation("Unable to fetch location");
-            }
-        );
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+
+                (position) => {
+                    const coords = `${position.coords.latitude}, ${position.coords.longitude}`;
+                    setFormData((prev) => ({ ...prev, gpsLocation: coords }));
+                },
+                (error) => {
+                    console.error("GPS error:", error);
+                }
+            );
+        }
     }, []);
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
+
         e.preventDefault();
         setLoading(true);
 
-        const payload = {
-            date,
-            region,
-            landingSite,
-            enumeratorName,
-            gpsLocation,
-        };
-        console.log("Submitted Data: General Info", payload);
+        try {
+            const res = await fetch("http://localhost:5000/api/general-info", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+                body: JSON.stringify(formData),
+            });
 
-        setLoading(false);
+            const data = await res.json();
 
-        // Later: send to API with axios
-        // axios.post("/api/general-info", payload)
-        //   .then(response => console.log("Saved:", response.data))
-        //   .catch(err => console.error("Error:", err));
+            if (res.ok) {
+                toast.success("General Info Submitted Successfully!");
+                setFormData({
+                    date: '',
+                    region: '',
+                    landingSite: '',
+                    gpsLocation: '',
+                });
+                navigate("/fishing-vessel-details");
+
+            } else {
+                toast.error("Error: " + data.message);
+            }
+            setLoading(false);
+        } catch (err) {
+            console.error("Submission error:", err);
+        }
     };
 
     return (
@@ -71,14 +102,15 @@ const GeneralInformation = () => {
                             <Form onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Date</Form.Label>
-                                    <Form.Control type="date" className="form-input-text" value={date} readOnly />
+                                    <Form.Control type="date" className="form-input-text" value={formData.date} readOnly />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Region</Form.Label>
                                     <Form.Select
-                                        value={region}
-                                        onChange={(e) => setRegion(e.target.value)}
+                                        name="region"
+                                        value={formData.region}
+                                        onChange={handleChange}
                                         className="form-input-text"
                                         required
                                     >
@@ -94,10 +126,11 @@ const GeneralInformation = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Landing Site</Form.Label>
                                     <Form.Control
+                                        value={formData.landingSite}
                                         type="text"
                                         className="form-input-text"
-                                        value={landingSite}
-                                        onChange={(e) => setLandingSite(e.target.value)}
+                                        name="landingSite"
+                                        onChange={handleChange}
                                         placeholder="Enter landing site"
                                         required
                                     />
@@ -105,12 +138,12 @@ const GeneralInformation = () => {
 
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Enumerator Name</Form.Label>
-                                    <Form.Control type="text" value={enumeratorName} className="form-input-text" readOnly />
+                                    <Form.Control type="text" value={username || formData.enumeratorName} className="form-input-text" readOnly />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">GPS Location</Form.Label>
-                                    <Form.Control type="text" value={gpsLocation} className="form-input-text" readOnly />
+                                    <Form.Control type="text" value={formData.gpsLocation} className="form-input-text" readOnly />
                                 </Form.Group>
 
                                 <button

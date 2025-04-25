@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Col, Container, Row, Form, Spinner } from "react-bootstrap";
+import toast from "react-hot-toast";
 
 const vesselTypes = ["Volvo", "Gacan", "Leyla", "Afdheer", "Houri", "Other"];
 const fishingGears = [
@@ -12,35 +13,63 @@ const fishingGears = [
 ];
 
 const FishingVesselDetails = () => {
-    const [boatRegNumber, setBoatRegNumber] = useState("");
-    const [vesselType, setVesselType] = useState("");
+    const [formData, setFormData] = useState({
+        registerNumber: '',
+        typeOfVessel: '',
+        vesselLength: '',
+        numberOfCrew: '',
+        fishingGear: '',
+        numberOfGear: '',
+        meshSize: '',
+        useOfIce: false,
+        timeAtSea: ''
+    });
     const [loading, setLoading] = useState(false);
-    const [vesselLength, setVesselLength] = useState("");
-    const [numberOfCrew, setNumberOfCrew] = useState("");
-    const [fishingGear, setFishingGear] = useState("");
-    const [numberOfNets, setNumberOfNets] = useState("");
-    const [meshSize, setMeshSize] = useState("");
-    const [useOfIce, setUseOfIce] = useState("");
-    const [timeAtSea, setTimeAtSea] = useState("");
 
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
-        const data = {
-            boatRegNumber,
-            vesselType,
-            vesselLength,
-            numberOfCrew,
-            fishingGear,
-            numberOfNets,
-            meshSize,
-            useOfIce,
-            timeAtSea,
-        };
-        console.log("Fishing Vessel Data: Detils One two three", data);
-        // you can integrate API here
+        if (!formData.registerNumber || formData.registerNumber.trim() === "") {
+            toast.error("Please enter a valid registration number.");
+            return;
+        }
+        
+        setLoading(true);
+        try {
+            const res = await fetch("http://localhost:5000/api/vessels", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+                body: JSON.stringify(formData),
+            });
+            if (res.ok) {
+                toast.success("Vessel details submitted successfully!");
+                setFormData({
+                    registerNumber: '',
+                    typeOfVessel: '',
+                    vesselLength: '',
+                    numberOfCrew: '',
+                    fishingGear: '',
+                    numberOfGear: '',
+                    meshSize: '',
+                    useOfIce: false,
+                    timeAtSea: ''
+                });
+            } else {
+                const errorData = await res.json();
+                toast.error(errorData.message || "Error submitting form");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message || 'Error submitting form.');
+        }
         setLoading(false);
     };
 
@@ -57,15 +86,16 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="text"
                                         className="form-input-text"
-                                        value={boatRegNumber}
-                                        onChange={(e) => setBoatRegNumber(e.target.value)}
+                                        name="registerNumber"
+                                        value={formData.registerNumber}
+                                        onChange={handleChange}
                                         placeholder="Enter registration number"
                                     />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Type of Vessel</Form.Label>
-                                    <Form.Select className="form-input-text" value={vesselType} onChange={(e) => setVesselType(e.target.value)} required>
+                                    <Form.Select className="form-input-text" name="typeOfVessel" onChange={handleChange} required>
                                         <option value="">Select Vessel Type</option>
                                         {vesselTypes.map((v) => (
                                             <option key={v} value={v}>
@@ -80,8 +110,9 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="number"
                                         className="form-input-text"
-                                        value={vesselLength}
-                                        onChange={(e) => setVesselLength(Number(e.target.value))}
+                                        name="vesselLength"
+                                        value={formData.vesselLength}
+                                        onChange={handleChange}
                                         placeholder="Enter length in meters"
                                     />
                                 </Form.Group>
@@ -91,15 +122,16 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="number"
                                         className="form-input-text"
-                                        value={numberOfCrew}
-                                        onChange={(e) => setNumberOfCrew(Number(e.target.value))}
+                                        name="numberOfCrew"
+                                        value={formData.numberOfCrew}
+                                        onChange={handleChange}
                                         placeholder="Enter number of crew"
                                     />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label className="label-text">Fishing Gear Used</Form.Label>
-                                    <Form.Select className="form-input-text" value={fishingGear} onChange={(e) => setFishingGear(e.target.value)} required>
+                                    <Form.Select className="form-input-text" name="fishingGear" onChange={handleChange} value={formData.fishingGear} required>
                                         <option value="">Select Gear</option>
                                         {fishingGears.map((gear) => (
                                             <option key={gear} value={gear}>
@@ -114,8 +146,9 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="number"
                                         className="form-input-text"
-                                        value={numberOfNets}
-                                        onChange={(e) => setNumberOfNets(Number(e.target.value))}
+                                        name="numberOfGear"
+                                        value={formData.numberOfGear}
+                                        onChange={handleChange}
                                         placeholder="Enter quantity"
                                     />
                                 </Form.Group>
@@ -125,8 +158,9 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="number"
                                         className="form-input-text"
-                                        value={meshSize}
-                                        onChange={(e) => setMeshSize(Number(e.target.value))}
+                                        name="meshSize"
+                                        value={formData.meshSize}
+                                        onChange={handleChange}
                                         placeholder="Enter mesh size"
                                     />
                                 </Form.Group>
@@ -139,18 +173,16 @@ const FishingVesselDetails = () => {
                                             type="radio"
                                             label="Yes"
                                             name="useOfIce"
-                                            value="Yes"
-                                            checked={useOfIce === "Yes"}
-                                            onChange={(e) => setUseOfIce(e.target.value)}
+                                            checked={formData.useOfIce === true}
+                                            onChange={() => setFormData({ ...formData, useOfIce: true })}
                                         />
                                         <Form.Check
                                             inline
                                             type="radio"
                                             label="No"
                                             name="useOfIce"
-                                            value="No"
-                                            checked={useOfIce === "No"}
-                                            onChange={(e) => setUseOfIce(e.target.value)}
+                                            checked={formData.useOfIce === false}
+                                            onChange={() => setFormData({ ...formData, useOfIce: false })}
                                         />
                                     </div>
                                 </Form.Group>
@@ -160,8 +192,9 @@ const FishingVesselDetails = () => {
                                     <Form.Control
                                         type="number"
                                         className="form-input-text"
-                                        value={timeAtSea}
-                                        onChange={(e) => setTimeAtSea(Number(e.target.value))}
+                                        name="timeAtSea"
+                                        value={formData.timeAtSea}
+                                        onChange={handleChange}
                                         placeholder="Enter total hours"
                                     />
                                 </Form.Group>

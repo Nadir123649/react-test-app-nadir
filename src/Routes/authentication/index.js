@@ -1,20 +1,16 @@
-import Signup from "../../pages/signup";
 import Login from "../../pages/login";
 import Home from "../../pages/home";
-import { signup, login, home, generalInfo, fishingVesselDetails, catchData, fishingEffortPerformance, bycatchAndVesselSightings, surveyFeedback } from "../pathName";
+import { login, home, generalInfo, fishingVesselDetails, catchData, fishingEffortPerformance, bycatchAndVesselSightings, surveyFeedback, station, tracking } from "../pathName";
 import GeneralInformation from "../../pages/generalInfo";
 import FishingVesselDetails from "../../pages/fishingVesselDetails";
 import CatchData from "../../pages/catchData";
 import FishingEffortPerformance from "../../pages/fishingEffortPerformance";
 import BycatchAndVesselSightings from "../../pages/bycatchAndVesselSightings";
 import SurveyFeedback from "../../pages/Feedback";
+import Station from "../../pages/station";
+import Tracking from "../../pages/tracking";
 
 const authRoutes = [
-  {
-    title: "signup",
-    component: Signup,
-    path: signup,
-  },
   {
     title: "login",
     component: Login,
@@ -54,6 +50,16 @@ const authRoutes = [
     title: "home",
     component: Home,
     path: home,
+  },
+  {
+    title: "station/id",
+    component: Station,
+    path: station,
+  },
+  {
+    title: "tracking/id",
+    component: Tracking,
+    path: tracking,
   },
 
 ];

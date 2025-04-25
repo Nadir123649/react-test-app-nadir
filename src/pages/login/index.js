@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Form, FormLabel, Row, Spinner } from "react-bootstrap";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,7 @@ const Login = () => {
     email: '',
     password: '',
   });
+
   const [isCustomError, setIsCustomError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,12 +34,15 @@ const Login = () => {
     try {
       const response = await login(data);
       if (response.status === 200) {
-        const accessTokenId = response.data.accessToken;
-        const userProfile = JSON.stringify(response.data.userProfile);
-        localStorage.setItem('accessToken', accessTokenId);
-        localStorage.setItem('userProfile', userProfile);
+        const { token, username, role } = response.data;
+
+        localStorage.setItem('accessToken', token);
+        localStorage.setItem('username', JSON.stringify(username));
+        localStorage.setItem('role', role);
+
         toast.success("User login successfully!");
         navigate('/home');
+
       } else {
         toast.error("Invalid email or password.");
       }
@@ -74,7 +78,8 @@ const Login = () => {
                     {...register("email", {
                       required: "*Please enter your email",
                       pattern: {
-                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                        value:
+                          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
                         message: "Please enter a valid email address",
                       },
                     })}
@@ -96,9 +101,9 @@ const Login = () => {
                       {...register("password", {
                         required: "*Please enter your password",
                         pattern: {
-                          value: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:"<>?])[A-Za-z\d!@#$%^&*()_+{}|:"<>?]+$/,
+                          value: /.+/,
                           message: "Password is incorrect",
-                        },
+                        }
                       })}
                     />
                     <span
@@ -116,6 +121,7 @@ const Login = () => {
                     )}
                   </Form.Group>
                 </div>
+
                 <div>
                   <button
                     type="submit"
@@ -136,6 +142,7 @@ const Login = () => {
                     )}
                   </button>
                 </div>
+
                 <p className="create-account text-center">
                   Don’t have an account? <span onClick={() => navigate("/signup")}>Sign Up</span>
                 </p>
